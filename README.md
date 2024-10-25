@@ -8,6 +8,39 @@ In modern cloud architectures, seamless load balancing and secure handling of us
 ### Objective
 The objective of this project is to deploy a Kubernetes Ingress Controller with sticky session support, routed through an AWS ALB and protected by AWS WAF. Using Terraform, we aim to automate this setup to provide a highly available, scalable, and secure environment that maintains user session consistency even during pod scaling events. This setup facilitates handling stateful sessions in a cloud-native way, without hardcoding infrastructure dependencies.
 
+The key security requirements for deploying a Kubernetes Ingress Controller with AWS ALB and WAF using Terraform, ensuring a secure and resilient environment:
+
+### 1. **Access Control**
+   - **Least Privilege Principle**: Assign the minimum permissions needed for AWS IAM roles used by Terraform to provision resources (e.g., ALB, WAF, and Route 53).
+   - **Role-based Access Control (RBAC)** in Kubernetes: Configure RBAC to restrict access to the Ingress Controller, allowing only authorized pods and services to use it.
+
+### 2. **Network Security**
+   - **Secure Ingress**: Use security groups to control access to the ALB, allowing only HTTPS/HTTP traffic from trusted IPs or sources.
+   - **Restrict Outbound Access**: Limit outbound access from Kubernetes pods and AWS resources, especially from sensitive services.
+
+### 3. **Data Encryption**
+   - **TLS Encryption**: Enable TLS on the ALB to encrypt data in transit from clients to the Ingress Controller.
+   - **SSL Termination**: Optionally enable SSL termination at the ALB or configure end-to-end TLS for traffic between ALB and Kubernetes.
+
+### 4. **WAF Protection**
+   - **Custom WAF Rules**: Define custom AWS WAF rules to block IP addresses, SQL injection, Cross-Site Scripting (XSS), and other malicious requests.
+   - **Logging and Monitoring**: Enable WAF logging and CloudWatch metrics to monitor threats and access patterns.
+
+### 5. **Session Security**
+   - **Secure Cookies**: Configure cookies for sticky sessions as `Secure` and `HttpOnly` to prevent interception or manipulation by malicious actors.
+
+### 6. **DNS Security**
+   - **Route 53 Access Control**: Restrict who can modify Route 53 DNS records to prevent unauthorized changes.
+   - **DNS Record TTL**: Set appropriate TTL values for DNS records to prevent outdated IPs being cached if the ALB changes.
+
+### 7. **Auditing and Monitoring**
+   - **Terraform State Management**: Securely manage Terraform state files to protect sensitive information.
+   - **Enable AWS CloudTrail**: Enable CloudTrail for monitoring API calls related to the creation and modification of resources such as ALB, WAF, and Route 53.
+   - **Ingress Logs**: Enable access logs for both the ALB and the Ingress Controller to analyze traffic patterns and identify any unauthorized access attempts.
+
+### 8. **Pod Security Policies (PSP)**
+   - Implement Pod Security Policies to restrict the behavior of pods within Kubernetes, preventing privilege escalation and enforcing resource limits. 
+
 ### Scope
 This project encompasses:
 1. Configuring Terraform to deploy NGINX/HAProxy Ingress Controller with sticky session handling in Kubernetes.
